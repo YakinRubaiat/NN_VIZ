@@ -232,6 +232,22 @@ LICENSE           MIT
   in `nnviz/prompts.py` plus one traced sentence. Changing them changes the
   activity maps, which is what the task-contrast maps are for.
 
+## Collaboration
+
+Collaboration is very welcome, from researchers, students, and anyone curious
+about what happens inside language models. Good ways to get involved:
+
+- **Try it on another model** and share what you see. Adapters for fused-QKV
+  models (Phi-3, Pythia) and post-norm blocks (OLMo-2) are especially wanted.
+- **Report a bug or suggest an idea** in
+  [Issues](https://github.com/YakinRubaiat/NN_VIZ/issues).
+- **Send a pull request.** See [CONTRIBUTING.md](https://github.com/YakinRubaiat/NN_VIZ/blob/main/CONTRIBUTING.md).
+- **Work on research together**, for example interpretability, attention sinks
+  and massive activations, or visualising training dynamics.
+
+To collaborate or just talk about the project, email **Yakin Rubaiat** at
+[yakin.rubaiat@gmail.com](mailto:yakin.rubaiat@gmail.com).
+
 ## Licence
 
 MIT. See [LICENSE](https://github.com/YakinRubaiat/NN_VIZ/blob/main/LICENSE). The vendored Three.js r160 is also MIT.
