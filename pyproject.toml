@@ -1,17 +1,37 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nnviz"
+name = "nnviz-mri"
 version = "0.2.0"
-description = "Look inside a language model: its full architecture with every weight visible, its wiring as a 3-D brain, and activity playing through both, token by token."
+description = "An MRI scanner for language models: every weight visible, the wiring as a 3-D brain, and activity playing through both, token by token."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Yakin Rubaiat" }]
 requires-python = ">=3.10"
+keywords = ["llm", "interpretability", "visualization", "3d", "transformers", "threejs", "neural-network"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Education",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Visualization",
+]
 dependencies = [
   "numpy>=1.26", "scipy>=1.11", "torch>=2.4", "transformers>=4.51",
   "safetensors>=0.4", "tokenizers>=0.21", "umap-learn>=0.5.5", "Pillow>=10.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/YakinRubaiat/NN_VIZ"
+Documentation = "https://github.com/YakinRubaiat/NN_VIZ/blob/main/GUIDE.md"
+Issues = "https://github.com/YakinRubaiat/NN_VIZ/issues"
 
 [project.scripts]
 nnviz = "nnviz.__main__:main"

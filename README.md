@@ -5,9 +5,9 @@ as Qwen3-0.6B, and draws the *whole* network in 3-D: where its weights are
 dense, how its neurons are wired, and what lights up, word by word, while it
 reads a sentence.
 
-![Three views of Qwen3-0.6B](docs/img/hero.jpg)
+![Three views of Qwen3-0.6B](https://raw.githubusercontent.com/YakinRubaiat/NN_VIZ/main/docs/img/hero.jpg)
 
-> **New to this?** Read **[GUIDE.md](GUIDE.md)**, a plain-language tour with
+> **New to this?** Read **[GUIDE.md](https://github.com/YakinRubaiat/NN_VIZ/blob/main/GUIDE.md)**, a plain-language tour with
 > pictures that needs no maths or AI background.
 
 ---
@@ -15,12 +15,21 @@ reads a sentence.
 ## Quick start
 
 ```bash
-python3.11 -m venv .venv && source .venv/bin/activate
-pip install -e .
+pip install nnviz-mri
 
 nnviz scan        # scan Qwen3-0.6B (≈2.5 min the first time, ≈15 s after)
 nnviz view        # open the viewer at http://127.0.0.1:8765
 ```
+
+Or, from a clone of this repo:
+
+```bash
+git clone https://github.com/YakinRubaiat/NN_VIZ.git && cd NN_VIZ
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e .
+```
+
+The package installs as `nnviz-mri`, but you import it as `nnviz` and the command is `nnviz`.
 
 Scan more models, then switch between them with the **Model** menu in the viewer:
 
@@ -49,8 +58,8 @@ sentence one token at a time.
 
 <table>
 <tr>
-<td><img src="docs/img/network_dynamic.jpg" alt="Network view during the dynamic scan"></td>
-<td><img src="docs/img/brain_layers.jpg" alt="Brain view coloured by layer depth"></td>
+<td><img src="https://raw.githubusercontent.com/YakinRubaiat/NN_VIZ/main/docs/img/network_dynamic.jpg" alt="Network view during the dynamic scan"></td>
+<td><img src="https://raw.githubusercontent.com/YakinRubaiat/NN_VIZ/main/docs/img/brain_layers.jpg" alt="Brain view coloured by layer depth"></td>
 </tr>
 <tr>
 <td align="center"><sub>Network: rows glowing for the current token</sub></td>
@@ -209,6 +218,7 @@ nnviz/
   viewer/         Three.js viewer (three r160 vendored, works offline)
 data/             scans, one folder per model (git-ignored)
 docs/img/         pictures used in this README and GUIDE.md
+LICENSE           MIT
 ```
 
 ## Caveats
@@ -221,3 +231,7 @@ docs/img/         pictures used in this README and GUIDE.md
 - **Activity depends on the probe**: "typical" activity comes from the prompts
   in `nnviz/prompts.py` plus one traced sentence. Changing them changes the
   activity maps, which is what the task-contrast maps are for.
+
+## Licence
+
+MIT. See [LICENSE](https://github.com/YakinRubaiat/NN_VIZ/blob/main/LICENSE). The vendored Three.js r160 is also MIT.
