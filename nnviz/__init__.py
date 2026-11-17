@@ -26,7 +26,7 @@ Building blocks are importable on their own: ``build_connectome``,
 
 from __future__ import annotations
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 from .activity import Activity, StreamStats, record_activity
 from .connectome import Connectome, build_connectome
