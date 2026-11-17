@@ -179,7 +179,8 @@ def scan(model: str = DEFAULT_MODEL, *, out: str | Path | None = None, probe: st
         conn_meta = load_connectome(cache / f"connectome_k{k}.npz").meta
     summary = summarize(meta=meta, combined=combined, trace=trace, peak=peak,
                         arch_manifest=arch_man, connectome_meta=conn_meta)
-    index = {"nnviz": "0.2.0", "model": model, "meta": meta, "summary": summary, "views": entries,
+    from . import __version__
+    index = {"nnviz": __version__, "model": model, "meta": meta, "summary": summary, "views": entries,
              "created": _dt.datetime.now().astimezone().isoformat(timespec="seconds")}
     ipath.write_text(json.dumps(index, indent=1))
     write_catalog(root.parent)
