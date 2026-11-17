@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nnviz scan</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ─────────────── left: what you are looking at ─────────────── -->
+  <aside class="panel left">
+    <header class="brand">
+      <span class="dot"></span>
+      <div><h1>nnviz</h1><p class="sub">look inside a language model</p></div>
+      <button class="themebtn" id="themeBtn" title="Light / dark background">☾</button>
+    </header>
+
+    <section class="block" id="modelBlock" hidden>
+      <h2>Model</h2>
+      <select id="modelSelect"></select>
+    </section>
+
+    <section class="block">
+      <div class="segs" id="viewTabs"></div>
+    </section>
+
+    <section class="block" id="presetBlock">
+      <h2>Looks</h2>
+      <div class="presets" id="presets"></div>
+    </section>
+
+    <section class="block">
+      <h2>Structure <span class="h2note">colour</span></h2>
+      <div id="paintList" class="series"></div>
+    </section>
+
+    <section class="block">
+      <h2>Activity <span class="h2note">overlay</span></h2>
+      <div id="overList" class="series"></div>
+    </section>
+
+    <section class="block">
+      <h2>What this shows</h2>
+      <p class="desc" id="desc"></p>
+    </section>
+
+    <section class="block">
+      <h2>Scan</h2>
+      <dl class="kv" id="metaList"></dl>
+    </section>
+  </aside>
+
+  <!-- ─────────────── centre: the scan ─────────────── -->
+  <main class="stage">
+    <canvas id="gl"></canvas>
+
+    <div class="overlay tl">
+      <div class="badge" id="modelBadge">—</div>
+      <div class="badge ghost" id="viewBadge">—</div>
+    </div>
+    <div class="overlay tr">
+      <div class="readout">
+        <div><span>render</span><b id="roMode">—</b></div>
+        <div><span>grid</span><b id="roGrid">—</b></div>
+        <div><span>draws/s</span><b id="roFps">—</b></div>
+      </div>
+    </div>
+    <div class="overlay bl" id="legend">
+      <div class="scalebar">
+        <div class="lgrow"><span class="lgname" id="lgPaintName">—</span></div>
+        <div class="ramp" id="rampPaint"></div>
+        <div class="ticks"><span id="rampPaintLo">—</span><span id="rampPaintHi">—</span></div>
+        <div id="lgOver" hidden>
+          <div class="lgrow" style="margin-top:7px"><span class="lgname" id="lgOverName">—</span></div>
+          <div class="ramp" id="rampOver"></div>
+          <div class="ticks"><span id="rampOverLo">—</span><span id="rampOverHi">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tip mono" id="tip" hidden></div>
+    <div class="overlay br hint">drag rotate · scroll zoom · shift-drag pan · space play</div>
+
+    <!-- dynamic scan player -->
+    <div class="dock" id="dock" hidden>
+      <div class="dockrow">
+        <button id="playBtn" class="pill" title="Play / pause (space)">▶</button>
+        <input type="range" id="frame" min="0" max="0" step="1" value="0">
+        <span class="mono tiny2" id="frameOut">0 / 0</span>
+        <select id="speed" title="Playback speed">
+          <option value="900">0.5×</option><option value="450" selected>1×</option><option value="220">2×</option>
+        </select>
+      </div>
+      <div class="tokenstrip" id="tokenStrip"></div>
+      <div class="charts">
+        <figure>
+          <canvas id="chartFire" width="560" height="96"></canvas>
+          <figcaption>neurons firing above ½ of their peak, per token · <span class="sw a"></span>attention <span class="sw m"></span>MLP</figcaption>
+        </figure>
+        <figure>
+          <canvas id="chartLayer" width="560" height="96"></canvas>
+          <figcaption>same, by layer (rows: layer 0 at top) × token</figcaption>
+        </figure>
+      </div>
+    </div>
+  </main>
+
+  <!-- ─────────────── right: controls ─────────────── -->
+  <aside class="panel right">
+    <section class="block" id="archBlock" hidden>
+      <h2>Network panels</h2>
+      <div class="segs" id="archDraw">
+        <button data-solid="0" class="on" title="Additive: small weights fade out, see through the whole network">X-ray</button>
+        <button data-solid="1" title="Opaque panels">Solid</button>
+      </div>
+      <div class="segs" id="archScale">
+        <button data-pp="0" class="on" title="One intensity scale for every weight in the model">Global scale</button>
+        <button data-pp="1" title="Stretch each panel's own range to see its internal structure">Per panel</button>
+      </div>
+      <label class="row"><span>colour</span><select id="archCmap"></select><output></output></label>
+      <label class="row"><span>threshold</span><input type="range" id="archThr" min="0" max="0.95" step="0.005" value="0.18"><output id="archThrOut">0.18</output></label>
+      <label class="row"><span>brightness</span><input type="range" id="archGain" min="0.3" max="3" step="0.01" value="1"><output id="archGainOut">1.00</output></label>
+      <label class="row"><span>opacity</span><input type="range" id="archOpacity" min="0.05" max="1" step="0.01" value="0.9"><output id="archOpacityOut">0.90</output></label>
+      <label class="row"><span>glow</span><input type="range" id="archAct" min="0" max="2" step="0.01" value="1"><output id="archActOut">1.00</output></label>
+      <label class="row"><span>dim weights</span><input type="range" id="archDim" min="0.05" max="1" step="0.01" value="0.35"><output id="archDimOut">0.35</output></label>
+      <label class="chk"><input type="checkbox" id="archSpin"> rotate</label>
+      <p class="tiny" style="margin-top:8px">Hover a panel to inspect it. Texel = RMS of an 8×8 block of real weights.</p>
+    </section>
+
+    <section class="block" id="renderBlock">
+      <h2>Render</h2>
+      <div class="segs" id="modeSegs">
+        <button data-mode="0" class="on" title="Emission / absorption volume rendering">Volume</button>
+        <button data-mode="1" title="Maximum intensity projection">MIP</button>
+        <button data-mode="2" title="Shaded surface; activity beneath it is projected onto it">Surface</button>
+        <button data-mode="3" title="Mean along the ray, like a radiograph">X-ray</button>
+      </div>
+      <div class="toggles">
+        <label class="chk"><input type="checkbox" id="tVolume" checked> volume</label>
+        <label class="chk" id="tNeuronsL"><input type="checkbox" id="tNeurons"> neurons</label>
+        <label class="chk" id="tTractsL"><input type="checkbox" id="tTracts"> fibres</label>
+        <label class="chk"><input type="checkbox" id="tPlanes"> cut planes</label>
+        <label class="chk"><input type="checkbox" id="tSpin"> rotate</label>
+      </div>
+      <label class="row" id="ncRow"><span>neurons</span>
+        <select id="neuronColor">
+          <option value="3">live activity</option>
+          <option value="0" selected>layer</option>
+          <option value="1">attention / MLP</option>
+          <option value="2">wiring strength</option>
+        </select><output></output>
+      </label>
+      <label class="row" id="psRow"><span>point</span>
+        <input type="range" id="pointSize" min="1" max="14" step="0.5" value="5"><output id="pointSizeOut">5</output>
+      </label>
+      <label class="row" id="taRow"><span>fibres</span>
+        <input type="range" id="tractAlpha" min="0.02" max="1" step="0.01" value="0.35"><output id="tractAlphaOut">0.35</output>
+      </label>
+    </section>
+
+    <section class="block" id="structBlock">
+      <h2>Structure window</h2>
+      <label class="row"><span>opacity</span><input type="range" id="density" min="0.02" max="3" step="0.01" value="1"><output id="densityOut">1.00</output></label>
+      <label class="row"><span>cutoff</span><input type="range" id="cutoff" min="0" max="0.9" step="0.005" value="0.12"><output id="cutoffOut">0.12</output></label>
+      <label class="row"><span>level</span><input type="range" id="level" min="0" max="1" step="0.005" value="0.5"><output id="levelOut">0.50</output></label>
+      <label class="row"><span>width</span><input type="range" id="width" min="0.05" max="1.5" step="0.005" value="1"><output id="widthOut">1.00</output></label>
+      <label class="row"><span>surface</span><input type="range" id="iso" min="0.02" max="0.95" step="0.005" value="0.35"><output id="isoOut">0.35</output></label>
+    </section>
+
+    <section class="block" id="actWinBlock">
+      <h2>Activity window</h2>
+      <label class="row"><span>threshold</span><input type="range" id="overThr" min="0" max="0.95" step="0.005" value="0.3"><output id="overThrOut">0.30</output></label>
+      <label class="row"><span>strength</span><input type="range" id="overGain" min="0.1" max="3" step="0.05" value="1"><output id="overGainOut">1.00</output></label>
+    </section>
+
+    <section class="block" id="clipBlock">
+      <h2>Clip</h2>
+      <p class="tiny">Cut away part of the object to see inside.</p>
+      <div class="cliprows">
+        <label class="row"><span>x</span><input type="range" id="clipX" min="0" max="1" step="0.005" value="1"><output id="clipXOut">1.00</output></label>
+        <label class="row"><span>y</span><input type="range" id="clipY" min="0" max="1" step="0.005" value="1"><output id="clipYOut">1.00</output></label>
+        <label class="row"><span>z</span><input type="range" id="clipZ" min="0" max="1" step="0.005" value="1"><output id="clipZOut">1.00</output></label>
+      </div>
+    </section>
+
+    <section class="block" id="sliceBlock">
+      <h2>Slices</h2>
+      <div class="ortho">
+        <figure><canvas id="cAx" width="240" height="240"></canvas><figcaption>axial</figcaption></figure>
+        <figure><canvas id="cCo" width="240" height="240"></canvas><figcaption>coronal</figcaption></figure>
+        <figure><canvas id="cSa" width="240" height="240"></canvas><figcaption>sagittal</figcaption></figure>
+      </div>
+      <div class="probe mono" id="probe"></div>
+    </section>
+  </aside>
+</div>
+
+<div id="boot" class="boot"><div class="bootbox">
+  <div class="spin"></div><p id="bootMsg">loading scan…</p><p class="tiny muted" id="bootHint"></p>
+</div></div>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/addons/" } }
+</script>
+<script src="js/colormaps.js"></script>
+<script src="js/slice-view.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
